@@ -8,19 +8,8 @@ import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { ReflectorForSSRPass } from "three/examples/jsm/objects/ReflectorForSSRPass.js";
 import { FXAAShader, RenderPass } from "three/examples/jsm/Addons.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
-// import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
-// import { SSRPass } from "three/addons/postprocessing/SSRPass.js";
-// import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
-// import { ReflectorForSSRPass } from "three/addons/objects/ReflectorForSSRPass.js";
+import LocomotiveScroll from "locomotive-scroll";
 
-// import {
-//   EffectComposer,
-//   OutputPass,
-//   ReflectorForSSRPass,
-//   RenderPass,
-//   SSRPass,
-//   UnrealBloomPass,
-// } from "three/examples/jsm/Addons.js";
 gsap.registerPlugin(ScrollTrigger);
 let scene, renderer, camera, stats;
 let model, skeleton, mixer, clock;
@@ -46,7 +35,14 @@ init();
 
 function init() {
   const container = document.getElementById("container");
-
+  const walkHeader1 = document.getElementsByClassName("walk-header-1");
+  const walkHeader2 = document.getElementsByClassName("walk-header-2");
+  const walkHeaderNumber1 = document.getElementsByClassName(
+    "walk-header-number-1"
+  );
+  const walkHeaderNumber2 = document.getElementsByClassName(
+    "walk-header-number-2"
+  );
   // ---------------------------------------------Three js scene setup----------------------------------------
   camera = new THREE.PerspectiveCamera(
     45,
@@ -90,41 +86,19 @@ function init() {
   dirLight.shadow.camera.right = 2;
   dirLight.shadow.camera.near = 0.1;
   dirLight.shadow.camera.far = 40;
-  scene.add(dirLight);
+  containerGroup.add(dirLight);
+  // scene.add(dirLight);
 
-  const hemiLight = new THREE.HemisphereLight(0x8d7c7c, 0x494966, 3);
+  const hemiLight = new THREE.HemisphereLight(0x8d7c7c, 0x494966, 5);
   scene.add(hemiLight);
 
-  const spotLight = new THREE.SpotLight();
-  spotLight.intensity = 8;
-  spotLight.angle = Math.PI * 2;
-  // spotLight.penumbra = 0.5;
-  // spotLight.castShadow = true;
-  spotLight.position.set(-1, 1, 1);
-  scene.add(spotLight);
-
-  // ground
-  // let geometry = new THREE.PlaneGeometry(5, 5);
-  // let groundReflector = new ReflectorForSSRPass(geometry, {
-  //   clipBias: 0.0003,
-  //   textureWidth: window.innerWidth,
-  //   textureHeight: window.innerHeight,
-  //   color: 0x888888,
-  //   useDepthTexture: true,
-  // });
-  // groundReflector.material.depthWrite = false;
-  // groundReflector.rotation.x = -Math.PI / 2;
-  // groundReflector.visible = false;
-  // scene.add(groundReflector);
-
-  // const plane = new THREE.Mesh(
-  //   new THREE.PlaneGeometry(8, 8),
-  //   new THREE.MeshPhongMaterial({ color: 0xcbcbcb })
-  // );
-  // plane.rotation.x = -Math.PI / 2;
-  // plane.position.y = -0.0001;
-  // // plane.receiveShadow = true;
-  // scene.add(plane);
+  // const spotLight = new THREE.SpotLight();
+  // spotLight.intensity = 8;
+  // spotLight.angle = Math.PI * 2;
+  // // spotLight.penumbra = 0.5;
+  // // spotLight.castShadow = true;
+  // spotLight.position.set(-1, 1, 1);
+  // scene.add(spotLight);
 
   // ---------------------------------------------Three js scene setup END----------------------------------------
   // ---------------------------------------------3D Object model init----------------------------------------
@@ -154,8 +128,23 @@ function init() {
 
     action = walkAction;
     action.play();
-    action.timeScale = 2.7 / 5;
+    action.timeScale = 2.9 / 5;
     scene.add(containerGroup);
+
+    // const gradientMap = new THREE.DataTexture(
+    //   colors,
+    //   colors.length,
+    //   1,
+    //   THREE.RedFormat
+    // );
+    // gradientMap.needsUpdate = true;
+    // const sphereGeo = new THREE.SphereGeometry(3, 16, 32);
+    // const sphereMaterial = new THREE.MeshToonMaterial({ color: 0xff0000 });
+    // const mesh = new THREE.Mesh(sphereGeo, sphereMaterial);
+    // mesh.material.opacity = 1;
+    // mesh.position.set(0, 0, 0);
+
+    // scene.add(mesh);
 
     // const particles = initParticles(20);
     // ---------------------------------------------3D Object model init END----------------------------------------
@@ -176,25 +165,25 @@ function init() {
       .timeline({
         scrollTrigger: {
           trigger: container,
-          scrub: 1,
+          scrub: 0,
           pin: true,
           start: () => "top top",
           end: () => "+=800%",
           onUpdate: (e) => {
-            camera.lookAt(0, 1.7 - e.progress, 0);
-            camera.position.y = 1.4 - e.progress;
+            camera.lookAt(
+              0,
+              1.7 - Math.round((e.progress + Number.EPSILON) * 1000) / 1000,
+              0
+            );
+            camera.position.y =
+              1.4 - Math.round((e.progress + Number.EPSILON) * 1000) / 1000;
+            // console.log("camera.position", camera.position);
           },
         },
       })
-      .fromTo(
-        camera.position,
-        {
-          z: -0.5,
-        },
-        {
-          z: -1.2,
-        }
-      )
+      .to(camera.position, {
+        z: -1.2,
+      })
       .to(camera.position, {
         z: -0.9,
       })
@@ -210,6 +199,104 @@ function init() {
       .to(camera.position, {
         z: -3,
       });
+    gsap.to(walkHeaderNumber1, {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: document.documentElement,
+        scrub: 1,
+        // scroller: "#container",
+        // markers: true,
+        // pin: true,
+        start: () => "+30% top",
+        end: () => "+=50%",
+      },
+    });
+    gsap.fromTo(
+      walkHeaderNumber1,
+      {
+        // opacity: 1,
+      },
+      {
+        opacity: 0,
+        scrollTrigger: {
+          trigger: document.documentElement,
+          scrub: 1,
+          // scroller: "#container",
+          // markers: true,
+          // pin: true,
+          start: () => "+50% top",
+          end: () => "+=15%",
+        },
+      }
+    );
+    gsap.to(walkHeader1, {
+      rotateX: 0,
+      rotateY: 0,
+      rotateZ: 0,
+      opacity: 1,
+      stagger: 0.05,
+
+      scrollTrigger: {
+        trigger: document.documentElement,
+        scrub: 1,
+        // scroller: "#container",
+        // markers: true,
+        // pin: true,
+        start: () => "+30% top",
+        end: () => "+=100%",
+      },
+    });
+
+    gsap.fromTo(
+      walkHeader1,
+      {
+        // opacity: 1,
+      },
+      {
+        top: -100,
+        // top: walkHeader.getBoundingClientRect().top - 150,
+        opacity: 0,
+        scrollTrigger: {
+          trigger: document.documentElement,
+          scrub: 1,
+          // scroller: "#container",
+          // markers: true,
+          // pin: true,
+          start: () => "+50% top",
+          end: () => "+=15%",
+        },
+      }
+    );
+
+    gsap.to(walkHeaderNumber2, {
+      opacity: 1,
+      scrollTrigger: {
+        trigger: document.documentElement,
+        scrub: 1,
+        // scroller: "#container",
+        // markers: true,
+        // pin: true,
+        start: () => "+60% top",
+        end: () => "+=50%",
+      },
+    });
+    gsap.to(walkHeader2, {
+      rotateX: 0,
+      rotateY: 0,
+      rotateZ: 0,
+      opacity: 1,
+      stagger: 0.05,
+
+      scrollTrigger: {
+        trigger: document.documentElement,
+        scrub: 1,
+        // markers: true,
+        // pin: true,
+        start: () => "+60% top",
+        end: () => "+=100%",
+      },
+    });
+
     renderer.setAnimationLoop(animate);
 
     // ---------------------------------------------GSAP scroll animation END----------------------------------------
@@ -240,14 +327,6 @@ function init() {
   var renderPass = new RenderPass(scene, camera);
   renderPass.clearColor = new THREE.Color(0, 0, 0);
   renderPass.clearAlpha = 0;
-  var fxaaPass = new ShaderPass(FXAAShader);
-  console.log("fxaaPass", fxaaPass);
-  fxaaPass.uniforms.resolution.value.set(
-    1 / window.innerWidth,
-    1 / window.innerHeight
-  );
-  fxaaPass.renderToScreen = true;
-  fxaaPass.material.transparent = true;
 
   // composer.addPass(new RenderPass(scene, camera));
   composer.addPass(renderPass);
@@ -299,9 +378,9 @@ window.addEventListener("mouseup", () => {
 class Particle {
   constructor() {
     this.bloom = new THREE.Group();
-    this.speedx = Math.random() * 2;
-    this.speedy = Math.random() * 2;
-    this.speedz = Math.random() * 2;
+    this.speedx = Math.random() * 5;
+    this.speedy = Math.random() * 5;
+    this.speedz = Math.random() * 5;
     this.bloom.position.x = (Math.random() - 0.5) * 5;
     this.bloom.position.y = Math.random() * 5;
     this.bloom.position.z = (Math.random() - 0.5) * 5;
@@ -364,6 +443,15 @@ function animate() {
   let mixerUpdateDelta = clock.getDelta();
 
   mixer.update(mixerUpdateDelta);
+
   renderer.render(scene, camera);
   composer.render();
 }
+
+// let myAudio = document.querySelector("#audio");
+// window.addEventListener("click", () => {
+//   myAudio.currentTime = 25;
+//   // myAudio.play();
+// });
+
+window.addEventListener("scroll", (e) => {});

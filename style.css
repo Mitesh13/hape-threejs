@@ -12,6 +12,48 @@
     url("https://db.onlinewebfonts.com/t/f1fcc5aed1e20fc0cdb9f8a7573625bd.svg#Integral CF Regular")
       format("svg");
 }
+@font-face {
+  font-family: "Integral CF Bold";
+  src: url("https://db.onlinewebfonts.com/t/b52804ac57ef6e90d2826a6b0f111133.eot");
+  src: url("https://db.onlinewebfonts.com/t/b52804ac57ef6e90d2826a6b0f111133.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/b52804ac57ef6e90d2826a6b0f111133.woff2")
+      format("woff2"),
+    url("https://db.onlinewebfonts.com/t/b52804ac57ef6e90d2826a6b0f111133.woff")
+      format("woff"),
+    url("https://db.onlinewebfonts.com/t/b52804ac57ef6e90d2826a6b0f111133.ttf")
+      format("truetype"),
+    url("https://db.onlinewebfonts.com/t/b52804ac57ef6e90d2826a6b0f111133.svg#Integral CF Bold")
+      format("svg");
+}
+@font-face {
+  font-family: "Neue Plak W04 Extended Thin";
+  src: url("https://db.onlinewebfonts.com/t/dfc50e593f5b58b9284d7f4ad447b4c8.eot");
+  src: url("https://db.onlinewebfonts.com/t/dfc50e593f5b58b9284d7f4ad447b4c8.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/dfc50e593f5b58b9284d7f4ad447b4c8.woff2")
+      format("woff2"),
+    url("https://db.onlinewebfonts.com/t/dfc50e593f5b58b9284d7f4ad447b4c8.woff")
+      format("woff"),
+    url("https://db.onlinewebfonts.com/t/dfc50e593f5b58b9284d7f4ad447b4c8.ttf")
+      format("truetype"),
+    url("https://db.onlinewebfonts.com/t/dfc50e593f5b58b9284d7f4ad447b4c8.svg#Neue Plak W04 Extended Thin")
+      format("svg");
+}
+@font-face {
+  font-family: "Druk Text Wide Medium";
+  src: url("https://db.onlinewebfonts.com/t/af838307d88e776c561011a763d743de.eot");
+  src: url("https://db.onlinewebfonts.com/t/af838307d88e776c561011a763d743de.eot?#iefix")
+      format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/af838307d88e776c561011a763d743de.woff2")
+      format("woff2"),
+    url("https://db.onlinewebfonts.com/t/af838307d88e776c561011a763d743de.woff")
+      format("woff"),
+    url("https://db.onlinewebfonts.com/t/af838307d88e776c561011a763d743de.ttf")
+      format("truetype"),
+    url("https://db.onlinewebfonts.com/t/af838307d88e776c561011a763d743de.svg#Druk Text Wide Medium")
+      format("svg");
+}
 * {
   margin: 0px;
   padding: 0px;
@@ -26,6 +68,7 @@ body {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32'%3E%3Cpath fill='%23fff' d='M24.7 17.8a25.1 25.1 0 0 1-2.49 8.02c-.25.53-.45 1.1-.67 1.64-.66 1.3-.5 3.03-.5 3.15l-.82.04-1.72-4c-.53.87-1.05 1.97-1.54 2.82l-.91-.07s-1.05-2.87-1.61-4.28c-.34 1.08-.65 2.05-.94 3.02-.22.72-.46 1.91-.68 2.64h-.87c0-1.78-.14-1.86-.57-2.32-.96-1.06-1.92-2.13-2.93-3.14-.73-.71-1.37-1.43-1.23-2.53.13-1.04.32-2.07.57-3.1.2-.79.88-1.19 1.62-1.53.54 1.38 1.06 2.77 2.03 4-.22-1.06-.43-2.06-.6-3.05-.7-3.83-.57-7.65.21-11.44.35-1.66.78-3.3 1.2-4.95.3-1.16 1.14-1.68 2.22-1.44.97.22 1.4.97 1.22 1.96-.4 2.1-.81 4.18-1.15 6.28-.3 1.85-.18 3.7.18 5.52.07-.4.1-.8.21-1.17.29-1 .95-1.53 1.83-1.49.86.04 1.39.5 1.53 1.37l.08.63c.51-1.16.9-1.4 2.04-1.24.89.12 1.36.66 1.5 1.68.24-.2.49-.5.8-.6.86-.34 1.66.13 1.92 1.03.26.85.17 1.7.07 2.56Z'/%3E%3Cpath fill='%23000' d='M22.38 12.84c1.42-.62 3.25.2 3.52 2.36a13.4 13.4 0 0 1-.14 3.62c-.37 2.74-1.43 5.24-2.56 7.72-.34.7-.6 1.42-.8 2.17-.11.42-.11.86-.1 1.3l-.01.49v1.28h-2.75c-.09 0-.2-.17-.26-.28l-.58-1.31-.38-.85-1.01 1.32-1.67-.07-1.07-1.57-.85 2.98h-3V30.01c.03-.37-.09-.74-.35-1l-.71-.77a78.89 78.89 0 0 0-2.19-2.28c-.82-.82-1.46-1.72-1.44-2.9 0-.55.1-1.09.19-1.62l.09-.55c.07-.5.16-1 .29-1.5.32-1.2 1.22-1.9 2.26-2.43.32-.16.38-.35.38-.71v-.52c-.02-1.58-.04-3.16.08-4.72.19-2.67.82-5.26 1.53-7.83.2-.7.49-1.37.85-2 .5-.9 2.06-1.53 3.5-.97a2.8 2.8 0 0 1 1.78 3.32c-.4 2.04-.76 4.08-1.13 6.13a8 8 0 0 0-.1 1c0 .13 0 .27-.02.4.1-.09 1.8-.48 2.82.65l.07.02.09-.02c.85-.23 2.59-.69 3.67 1.13Zm-.2 12.84a24.9 24.9 0 0 0 2.46-7.94c.1-.85.2-1.7-.06-2.53-.26-.9-1.06-1.36-1.9-1.04-.22.09-.41.25-.59.42l-.22.19c-.13-1.01-.6-1.55-1.48-1.67-1.12-.16-1.5.08-2.02 1.23l-.02-.16a6.67 6.67 0 0 0-.06-.46c-.14-.86-.66-1.33-1.52-1.36-.87-.05-1.52.47-1.8 1.47-.08.25-.12.51-.16.78l-.06.39a15.2 15.2 0 0 1-.18-5.48c.34-2.08.74-4.15 1.14-6.23.19-.97-.24-1.72-1.2-1.94-1.07-.24-1.9.28-2.2 1.42-.43 1.64-.85 3.27-1.2 4.92-.77 3.76-.9 7.54-.22 11.34l.42 2.13.18.9c-.92-1.18-1.43-2.5-1.95-3.83l-.06-.15c-.73.35-1.4.75-1.6 1.53a28.03 28.03 0 0 0-.57 3.07c-.14 1.09.5 1.8 1.22 2.5.93.94 1.82 1.92 2.7 2.9l.21.22.05.06c.39.41.52.55.52 2.24h.86c.1-.34.2-.79.32-1.24.12-.5.24-1 .35-1.38l.93-2.99c.55 1.4 1.6 4.25 1.6 4.25l.9.06c.22-.37.44-.78.66-1.2.28-.55.57-1.11.87-1.6l.94 2.2.76 1.77.82-.04v-.11c-.02-.42-.08-1.88.49-3.01l.2-.52c.15-.37.3-.75.47-1.1ZM13.22 2.33l2.02.43-.4 1.28-1.69-.35v-.02l-.07-.01s0-.8.14-1.33Zm1.21 15.2c2.92.15 5.77.73 8.63 1.5l.34-1.28a39.58 39.58 0 0 0-8.97-1.55v1.34Zm7.95 3.7s-5.65-1.08-6.23-1.17l.05-.37.12-1.03L22.78 20c-.11.41-.25.83-.4 1.23Z'/%3E%3C/svg%3E%0A")
       12 2,
     auto;
+  scroll-behavior: smooth;
 }
 
 #app {
@@ -39,12 +82,37 @@ body {
 .header-wrapper {
   margin: 0 auto;
 }
-
-#walk-header-1 {
-  transform: translate(-50%, -50%);
-  /* rotateX(90deg); */
-  z-index: 999;
+#walk-header-wrapper {
 }
+.walk-header-number {
+  color: #ffffff8c;
+  opacity: 0;
+}
+.walk-header-1,
+.walk-header-2 {
+  z-index: 999;
+  transform-style: preserve-3d;
+  perspective: 1500;
+  -webkit-perspective: 1500;
+  transform-origin: left bottom;
+  transform: rotate3d(1, 0.15, 0, 90deg);
+  opacity: 0;
+  font-family: "Integral CF Bold";
+}
+.walk-header-desc {
+  font-family: "Neue Plak W04 Extended Thin" !important;
+  color: #ffffff8c;
+}
+
+.bottom-bar * {
+  font-family: "Druk Text Wide Medium";
+  text-transform: uppercase;
+  letter-spacing: -0.05em;
+}
+.font-wide {
+  font-family: "Druk Text Wide Medium";
+}
+
 .image {
   object-fit: cover;
   width: 100%;
