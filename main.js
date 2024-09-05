@@ -72,6 +72,7 @@ function init() {
   groundReflector.visible = false;
   groundReflector.position.z = -1;
   scene.add(groundReflector);
+  containerGroup.add(groundReflector);
 
   // const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 1);
   // hemiLight.position.set(0, 20, 0);
@@ -150,6 +151,7 @@ function init() {
     // ---------------------------------------------3D Object model init END----------------------------------------
     // ---------------------------------------------GSAP scroll animation----------------------------------------
 
+    // Rotating the entire group (model, lights, sparkles)
     gsap.to(containerGroup.rotation, {
       y: Math.PI * 2.1,
       scrollTrigger: {
@@ -161,6 +163,7 @@ function init() {
       },
     });
 
+    // Camera z-axis positioning around the model on scroll
     gsap
       .timeline({
         scrollTrigger: {
@@ -198,7 +201,12 @@ function init() {
       })
       .to(camera.position, {
         z: -3,
+      })
+      .to(containerGroup.position, {
+        y: 1,
       });
+
+    // Walk1 text animation for the number above the text (opacity 0 -> 1)
     gsap.to(walkHeaderNumber1, {
       opacity: 1,
       scrollTrigger: {
@@ -211,6 +219,8 @@ function init() {
         end: () => "+=50%",
       },
     });
+
+    // Walk1 text animation for the number above the text (opacity 1 -> 0)
     gsap.fromTo(
       walkHeaderNumber1,
       {
@@ -229,6 +239,7 @@ function init() {
         },
       }
     );
+    // Walk1 text animation (rotation and opacity 0 -> 1)
     gsap.to(walkHeader1, {
       rotateX: 0,
       rotateY: 0,
@@ -247,6 +258,7 @@ function init() {
       },
     });
 
+    // Walk1 text animation (opacity 1 -> 0)
     gsap.fromTo(
       walkHeader1,
       {
@@ -268,6 +280,7 @@ function init() {
       }
     );
 
+    // Walk2 text animation for the number above the text (opacity 0 -> 1)
     gsap.to(walkHeaderNumber2, {
       opacity: 1,
       scrollTrigger: {
@@ -280,6 +293,8 @@ function init() {
         end: () => "+=50%",
       },
     });
+
+    // Walk2 text animation (rotation and opacity 0 -> 1)
     gsap.to(walkHeader2, {
       rotateX: 0,
       rotateY: 0,
@@ -294,6 +309,58 @@ function init() {
         // pin: true,
         start: () => "+60% top",
         end: () => "+=100%",
+      },
+    });
+
+    // Walk2 text animation (opacity 1 -> 0)
+    gsap.fromTo(
+      walkHeader2,
+      {
+        // opacity: 1,
+      },
+      {
+        top: -100,
+        // top: walkHeader.getBoundingClientRect().top - 150,
+        opacity: 0,
+        scrollTrigger: {
+          trigger: document.documentElement,
+          scrub: 1,
+          // scroller: "#container",
+          // markers: true,
+          // pin: true,
+          start: () => "+80% top",
+          end: () => "+=15%",
+        },
+      }
+    );
+
+    // Walk1 text animation for the number above text (opacity 1 -> 0)
+    gsap.fromTo(
+      walkHeaderNumber2,
+      {
+        // opacity: 1,
+      },
+      {
+        opacity: 0,
+        scrollTrigger: {
+          trigger: document.documentElement,
+          scrub: 1,
+          // scroller: "#container",
+          // markers: true,
+          // pin: true,
+          start: () => "+80% top",
+          end: () => "+=15%",
+        },
+      }
+    );
+
+    gsap.to("#hidden-scroll", {
+      scrollTrigger: {
+        trigger: container,
+        scrub: 1,
+        // pin: true,
+        start: () => "top top",
+        end: () => "+=700%",
       },
     });
 
