@@ -174,7 +174,8 @@ const loadModel = (modelObj, i) => {
     (xhr) => {
       totalAssetsWeight = xhr;
       loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
-      console.log("loading", xhr);
+
+      let tl;
       if (i == 0) {
         const per = Math.round(Number(loading[0]) * 100) + "%";
         console.log("loading[0]", per);
@@ -212,7 +213,8 @@ const loadModel = (modelObj, i) => {
         );
       }
       if (loading.every((loaded) => loaded == 1)) {
-        const tl = gsap.timeline();
+        console.log("here");
+        tl = gsap.timeline();
         const iconsContainer = document.getElementById("icons-container");
         iconsContainer.style.display = "flex";
         tl.to(loadingContainer, {
