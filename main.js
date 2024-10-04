@@ -212,30 +212,23 @@ const loadModel = (modelObj, i) => {
         );
       }
       if (loading.every((loaded) => loaded == 1)) {
-        gsap
-          .to(loadingContainer, {
-            bottom: "100%",
-            top: "-100%",
-            // opacity: 0,
-            duration: 1,
-            delay: 1.5,
-          })
-          .then(() => {
-            const iconsContainer = document.getElementById("icons-container");
-            iconsContainer.style.display = "flex";
-            console.log(document.querySelectorAll("#icons-container img"));
-            gsap.from(document.querySelectorAll("#icons-container img"), {
-              top: 100,
-              duration: 0.5,
-              ease: "back.out(1.7)",
-              stagger: 0.2,
-            });
-            // gsap.to(iconsContainer, {
-            //   duration: 2.5,
-            //   ease: "back.out(1.7)",
-            //   y: -250,
-            // });
-          });
+        const tl = gsap.timeline();
+        const iconsContainer = document.getElementById("icons-container");
+        iconsContainer.style.display = "flex";
+        tl.to(loadingContainer, {
+          bottom: "100%",
+          top: "-100%",
+          // opacity: 0,
+          duration: 1,
+          delay: 1.5,
+        });
+        console.log(document.querySelectorAll("#icons-container img"));
+        tl.from("#icons-container img", {
+          top: 100,
+          duration: 0.5,
+          ease: "back.out(1.7)",
+          stagger: 0.2,
+        });
       }
       // console.log("xhr", xhr);
       // containerGroup.updateMatrix();
