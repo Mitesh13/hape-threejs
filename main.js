@@ -226,8 +226,9 @@ const loadModel = (modelObj, i) => {
         console.log(document.querySelectorAll("#icons-container img"));
         tl.to("#icons-container img", {
           top: 0,
-          duration: 0.5,
-          ease: "back.out(1.7)",
+          duration: 1,
+          // ease: "back.out(1.7)",
+          ease: "elastic.out(0.4,0.3)",
           stagger: 0.2,
         });
       }
