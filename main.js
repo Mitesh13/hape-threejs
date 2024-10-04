@@ -173,7 +173,7 @@ const loadModel = (modelObj, i) => {
     (gltf) => onModelLoad(gltf, modelObj, afterLoad),
     (xhr) => {
       totalAssetsWeight = xhr;
-      loading[i] = xhr.loaded / xhr.total;
+      loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
       console.log("loading", xhr);
       if (i == 0) {
         const per = Math.round(Number(loading[0]) * 100) + "%";
