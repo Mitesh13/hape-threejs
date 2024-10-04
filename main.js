@@ -166,6 +166,33 @@ const playModels = (model, i) => {
   containerGroup.add(model);
 };
 
+const throttle = () => {
+  let flag = false;
+  return (loading) => {
+    if (flag) return;
+    // flag = true;
+    // setTimeout(() => {
+    console.log("loading", loading);
+    var per = Math.round(Number(loading) * 100) + "%";
+
+    flag = false;
+    gsap.to(
+      loading1,
+      // { textContent: Math.round(Number(loading1.textContent)) },
+      {
+        textContent: () => {
+          console.log("these many times");
+          return per;
+        },
+        duration: 1,
+        ease: "power1.inOut",
+      }
+    );
+    // }, 100);
+  };
+};
+const loadThrottle = throttle();
+
 const loadModel = (modelObj, i) => {
   const loader = new GLTFLoader();
   loader.load(
@@ -174,43 +201,44 @@ const loadModel = (modelObj, i) => {
     (xhr) => {
       totalAssetsWeight = xhr;
       loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
-
+      console.log("here");
       let tl;
       if (i == 0) {
-        const per = Math.round(Number(loading[0]) * 100) + "%";
-        console.log("loading[0]", per);
-        gsap.to(
-          loading1,
-          // { textContent: Math.round(Number(loading1.textContent)) },
-          {
-            textContent: per,
-            duration: 1,
-            ease: "power1.inOut",
-          }
-        );
-        // loading1.textContent = Math.round(loading[0] * 100) + "%";
+        // loadThrottle(loading[i]);
+        // gsap.to(
+        //   loading1,
+        //   // { textContent: Math.round(Number(loading1.textContent)) },
+        //   {
+        //     textContent: per,
+        //     duration: 1,
+        //     ease: "power1.inOut",
+        //   }
+        // );
+        loading1.textContent = Math.round(loading[0] * 100) + "%";
       }
       if (i == 1) {
-        gsap.to(
-          loading2,
-          // { textContent: Math.round(Number(loading1.textContent)) },
-          {
-            textContent: Math.round(Number(loading[1]) * 100) + "%",
-            duration: 1,
-            ease: "power1.inOut",
-          }
-        );
+        // gsap.to(
+        //   loading2,
+        //   // { textContent: Math.round(Number(loading1.textContent)) },
+        //   {
+        //     textContent: Math.round(Number(loading[1]) * 100) + "%",
+        //     duration: 1,
+        //     ease: "power1.inOut",
+        //   }
+        // );
+        loading2.textContent = Math.round(loading[1] * 100) + "%";
       }
       if (i == 2) {
-        gsap.to(
-          loading3,
-          // { textContent: Math.round(Number(loading1.textContent)) },
-          {
-            textContent: Math.round(Number(loading[2]) * 100) + "%",
-            duration: 1,
-            ease: "power1.inOut",
-          }
-        );
+        // gsap.to(
+        //   loading3,
+        //   // { textContent: Math.round(Number(loading1.textContent)) },
+        //   {
+        //     textContent: Math.round(Number(loading[2]) * 100) + "%",
+        //     duration: 1,
+        //     ease: "power1.inOut",
+        //   }
+        // );
+        loading3.textContent = Math.round(loading[2] * 100) + "%";
       }
       if (loading.every((loaded) => loaded == 1)) {
         console.log("here");
