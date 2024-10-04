@@ -7,6 +7,7 @@ const onModelLoad = (gltf, modelObj, afterLoad) => {
     let action;
     model = gltf.scene;
     model.position.x = 0.03;
+
     if (modelObj.hasOwnProperty("rotate")) model.rotation.y = modelObj.rotate;
     if (modelObj.hasOwnProperty("scale")) {
       model.scale.set(modelObj.scale, modelObj.scale, modelObj.scale);

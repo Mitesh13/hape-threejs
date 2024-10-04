@@ -216,8 +216,7 @@ const loadModel = (modelObj, i) => {
         const iconsContainer = document.getElementById("icons-container");
         iconsContainer.style.display = "flex";
         tl.to(loadingContainer, {
-          bottom: "100%",
-          top: "-100%",
+          y: "-100%",
           // opacity: 0,
           duration: 1,
           delay: 1.5,
@@ -276,8 +275,9 @@ function init() {
   });
   groundReflector.material.depthWrite = false;
   groundReflector.rotation.x = -Math.PI / 2;
-  groundReflector.visible = false;
+  // groundReflector.visible = false;
   groundReflector.position.z = -1;
+
   scene.add(groundReflector);
   containerGroup.add(groundReflector);
 
@@ -357,7 +357,7 @@ function init() {
   // renderer.autoClear = false;
   renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(window.innerWidth - 20, window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true;
   var parameters = {
     minFilter: THREE.LinearFilter,

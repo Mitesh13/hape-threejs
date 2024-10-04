@@ -38,7 +38,7 @@ const animations = (container, containerGroup, camera, model) => {
             model.lookAt[2]
           );
           camera.position.y =
-            1.4 - Math.round((e.progress + Number.EPSILON) * 1000) / 1000;
+            1.4 - Math.round((e.progress - 0.1 + Number.EPSILON) * 1000) / 1000;
           // console.log("camera.position", camera.position);
         },
       },
