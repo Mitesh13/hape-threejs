@@ -210,7 +210,7 @@ const loadModel = (modelObj, i) => {
           // { textContent: Math.round(Number(loading1.textContent)) },
           {
             textContent: per,
-            duration: 1,
+            duration: 0.5,
             ease: "power1.inOut",
           }
         );
@@ -222,7 +222,7 @@ const loadModel = (modelObj, i) => {
           // { textContent: Math.round(Number(loading1.textContent)) },
           {
             textContent: Math.round(Number(loading[1]) * 100) + "%",
-            duration: 1,
+            duration: 0.5,
             ease: "power1.inOut",
           }
         );
@@ -234,7 +234,7 @@ const loadModel = (modelObj, i) => {
           // { textContent: Math.round(Number(loading1.textContent)) },
           {
             textContent: Math.round(Number(loading[2]) * 100) + "%",
-            duration: 1,
+            duration: 0.5,
             ease: "power1.inOut",
           }
         );
