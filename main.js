@@ -130,11 +130,9 @@ loaderMesh.userData.label = "loader";
 const afterLoad = (model, modelObj) => {
   // model.visible = false;
   // containerGroup.add(skeleton);
-  console.log("here");
 
   models[model.userData.modelObj.index - 1] = model;
   if (models.every((model) => model !== null)) {
-    console.log("mixers", mixers);
     models.forEach((model, i) => {
       mixers.push(new THREE.AnimationMixer(model));
       playModels(model, i);
@@ -192,6 +190,8 @@ const throttle = () => {
   };
 };
 const loadThrottle = throttle();
+let tl;
+tl = gsap.timeline();
 
 const loadModel = (modelObj, i) => {
   const loader = new GLTFLoader();
@@ -201,8 +201,7 @@ const loadModel = (modelObj, i) => {
     (xhr) => {
       totalAssetsWeight = xhr;
       loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
-      console.log("here");
-      let tl;
+
       if (i == 0) {
         // loadThrottle(loading[i]);
         // gsap.to(
@@ -240,9 +239,12 @@ const loadModel = (modelObj, i) => {
         // );
         loading3.textContent = Math.round(loading[2] * 100) + "%";
       }
-      if (loading.every((loaded) => loaded == 1) && !tl) {
-        console.log("here");
-        tl = gsap.timeline();
+      if (loading.every((loaded) => loaded == 1) && !tl.parent) {
+        console.log(
+          "here reveal",
+          loading.every((loaded) => loaded == 1),
+          tl
+        );
         const iconsContainer = document.getElementById("icons-container");
         iconsContainer.style.display = "flex";
         tl.to(loadingContainer, {
@@ -252,7 +254,6 @@ const loadModel = (modelObj, i) => {
           delay: 1.5,
           ease: "power1.inOut",
         });
-        console.log(document.querySelectorAll("#icons-container img"));
         tl.to("#icons-container img", {
           top: 0,
           duration: 1,

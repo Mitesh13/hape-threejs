@@ -174,7 +174,6 @@ const animations = (container, containerGroup, camera, model) => {
       end: () => "+=100%",
     },
   });
-  console.log("anim", anim.timeline.reverse());
 
   // Walk2 text animation (opacity 1 -> 0)
   gsap.fromTo(
