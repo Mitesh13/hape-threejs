@@ -6,17 +6,30 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { SSRPass } from "three/examples/jsm/postprocessing/SSRPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { ReflectorForSSRPass } from "three/examples/jsm/objects/ReflectorForSSRPass.js";
-import { FXAAShader, RenderPass } from "three/examples/jsm/Addons.js";
+import {
+  FXAAShader,
+  OrbitControls,
+  RenderPass,
+} from "three/examples/jsm/Addons.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import LocomotiveScroll from "locomotive-scroll";
+import Particle from "./particle";
+import animations, { getReverseAnim } from "./animations";
+import showLoader from "./loading";
+import onModelLoad from "./utils";
 
 gsap.registerPlugin(ScrollTrigger);
 let scene, renderer, camera, stats;
-let model, skeleton, mixer, clock;
+let mixer, clock;
+let action, walkAction;
+let totalAssetsWeight = 0;
+let assetsWeightLoaded = 0;
+let currentModel = 0;
 
-let walkAction;
-let action;
 var containerGroup = new THREE.Group();
+var modelsGroup = new THREE.Group();
+var mainGroup = new THREE.Group();
+let loading = [0, 0, 0];
 const bloomGroup = new THREE.Group();
 const particles = [];
 
@@ -31,18 +44,215 @@ let ssrPass;
 let groundReflector;
 const selects = [];
 
+const modelsConfig = [
+  {
+    index: 1,
+    name: "Soldier",
+    animationArrayIndex: 3,
+    lookAt: [0, 1.7, 0],
+    background: "rgb(32, 31, 31)",
+    particlesColor: "orange",
+    info: [
+      {
+        title: "Mechaura Makeover",
+        description:
+          "Switch up your Terraguard's armor with digital upgrades, rank up on the Mechaura Index, and build your bot for the metaverse.",
+      },
+      {
+        title: "Walk the Mechaura Walk",
+        description:
+          "Take to the Mechaura Walk and showcase your Terraguard's collection.",
+      },
+    ],
+  },
+  {
+    index: 2,
+    name: "light_assault_mech",
+    scale: 0.8,
+    rotate: Math.PI,
+    animationArrayIndex: 0,
+    lookAt: [0, 2, 0],
+    background: "rgb(107, 252, 255)",
+    particlesColor: "gray",
+    info: [
+      {
+        title: "Battle-Ready Upgrades",
+        description:
+          "Switch up your Aurora Strike's loadout with exclusive digital mods, rank up on the Mechaura Leaderboard, and optimize your mech for battle.",
+      },
+      {
+        title: "Runway Dominance",
+        description:
+          "Own the Mechaura Runway and display your Aurora Strike's sleek design.",
+      },
+    ],
+  },
+  {
+    index: 3,
+    name: "free_droide_de_seguridad_k-2so_by_oscar_creativo",
+    scale: 0.55,
+    rotate: Math.PI,
+    animationArrayIndex: 0,
+    lookAt: [0, 1.5, 0],
+    background: "rgb(234, 234, 234)",
+    particlesColor: "red",
+    info: [
+      {
+        title: "Security Overhaul",
+        description:
+          "Switch up your Vigilantius's protocols with cutting-edge digital updates, ascend the Mechaura Security Rankings, and enhance your droid's surveillance capabilities.",
+      },
+      {
+        title: "Sphere of Influence",
+        description:
+          "Rule the Mechaura Sphere and demonstrate your Vigilantius's advanced security skills.",
+      },
+    ],
+  },
+];
+const models = [null, null, null];
+const mixers = [];
+
+const walkHeaderNumber1 = document.getElementById("id-walk-header-number-1");
+const walkHeaderNumber2 = document.getElementById("id-walk-header-number-2");
+const walkHeader1 = document.getElementById("id-walk-header-1");
+const walkHeader2 = document.getElementById("id-walk-header-2");
+const walkDescrition1 = document.getElementById("id-walk-description-1");
+const walkDescrition2 = document.getElementById("id-walk-description-2");
+const loading1 = document.getElementById("loading-1");
+const loading2 = document.getElementById("loading-2");
+const loading3 = document.getElementById("loading-3");
+const loadingContainer = document.getElementById("loading");
+
+const loaderMesh = showLoader(containerGroup);
+loaderMesh.userData.label = "loader";
+
+const afterLoad = (model, modelObj) => {
+  // model.visible = false;
+  // containerGroup.add(skeleton);
+  console.log("here");
+
+  models[model.userData.modelObj.index - 1] = model;
+  if (models.every((model) => model !== null)) {
+    console.log("mixers", mixers);
+    models.forEach((model, i) => {
+      mixers.push(new THREE.AnimationMixer(model));
+      playModels(model, i);
+    });
+    containerGroup.children[3].visible = true;
+    containerGroup.children[4].visible = false;
+    containerGroup.children[5].visible = false;
+
+    walkHeader1.textContent = modelsConfig[currentModel].info[0].title;
+    walkDescrition1.textContent =
+      modelsConfig[currentModel].info[0].description;
+    walkHeader2.textContent = modelsConfig[currentModel].info[1].title;
+    walkDescrition2.textContent =
+      modelsConfig[currentModel].info[1].description;
+    renderer.setAnimationLoop(animate);
+  }
+};
+
+const playModels = (model, i) => {
+  const animations = model.userData.gltf.animations;
+
+  walkAction = mixers[i].clipAction(
+    animations[model.userData.modelObj.animationArrayIndex]
+  );
+
+  action = walkAction;
+  action.play();
+  action.timeScale = 2.9 / 5;
+  containerGroup.add(model);
+};
+
+const loadModel = (modelObj, i) => {
+  const loader = new GLTFLoader();
+  loader.load(
+    modelObj.name + ".glb",
+    (gltf) => onModelLoad(gltf, modelObj, afterLoad),
+    (xhr) => {
+      totalAssetsWeight = xhr;
+      loading[i] = xhr.loaded / xhr.total;
+      // console.log("loading", loading);
+      if (i == 0) {
+        const per = Math.round(Number(loading[0]) * 100) + "%";
+        console.log("loading[0]", per);
+        gsap.to(
+          loading1,
+          // { textContent: Math.round(Number(loading1.textContent)) },
+          {
+            textContent: per,
+            duration: 1,
+            ease: "power1.inOut",
+          }
+        );
+        // loading1.textContent = Math.round(loading[0] * 100) + "%";
+      }
+      if (i == 1) {
+        gsap.to(
+          loading2,
+          // { textContent: Math.round(Number(loading1.textContent)) },
+          {
+            textContent: Math.round(Number(loading[1]) * 100) + "%",
+            duration: 1,
+            ease: "power1.inOut",
+          }
+        );
+      }
+      if (i == 2) {
+        gsap.to(
+          loading3,
+          // { textContent: Math.round(Number(loading1.textContent)) },
+          {
+            textContent: Math.round(Number(loading[2]) * 100) + "%",
+            duration: 1,
+            ease: "power1.inOut",
+          }
+        );
+      }
+      if (loading.every((loaded) => loaded == 1)) {
+        gsap
+          .to(loadingContainer, {
+            bottom: "100%",
+            top: "-100%",
+            // opacity: 0,
+            duration: 1,
+            delay: 1.5,
+          })
+          .then(() => {
+            const iconsContainer = document.getElementById("icons-container");
+            iconsContainer.style.display = "flex";
+            console.log(document.querySelectorAll("#icons-container img"));
+            gsap.from(document.querySelectorAll("#icons-container img"), {
+              top: 100,
+              duration: 0.5,
+              ease: "back.out(1.7)",
+              stagger: 0.2,
+            });
+            // gsap.to(iconsContainer, {
+            //   duration: 2.5,
+            //   ease: "back.out(1.7)",
+            //   y: -250,
+            // });
+          });
+      }
+      // console.log("xhr", xhr);
+      // containerGroup.updateMatrix();
+      // console.log(
+      //   "((xhr.loaded / xhr.total) * 3.6 * Math.PI) / 180",
+      //   xhr.loaded / xhr.total,
+      //   xhr.loaded / xhr.total == 1 ? 0.99999 : xhr.loaded / xhr.total
+      // );
+    }
+  );
+};
 init();
+// loadModel(modelsConfig[0]);
 
 function init() {
   const container = document.getElementById("container");
-  const walkHeader1 = document.getElementsByClassName("walk-header-1");
-  const walkHeader2 = document.getElementsByClassName("walk-header-2");
-  const walkHeaderNumber1 = document.getElementsByClassName(
-    "walk-header-number-1"
-  );
-  const walkHeaderNumber2 = document.getElementsByClassName(
-    "walk-header-number-2"
-  );
+
   // ---------------------------------------------Three js scene setup----------------------------------------
   camera = new THREE.PerspectiveCamera(
     45,
@@ -57,7 +267,9 @@ function init() {
   clock = new THREE.Clock();
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x201f1f);
+  scene.add(containerGroup);
+
+  scene.background = new THREE.Color("rgb(32, 31, 31)");
 
   let geometry = new THREE.PlaneGeometry(3, 3);
   groundReflector = new ReflectorForSSRPass(geometry, {
@@ -74,10 +286,6 @@ function init() {
   scene.add(groundReflector);
   containerGroup.add(groundReflector);
 
-  // const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 1);
-  // hemiLight.position.set(0, 20, 0);
-  // scene.add(hemiLight);
-
   const dirLight = new THREE.DirectionalLight(0xffffff, 10);
   dirLight.position.set(-3, 10, -10);
   dirLight.castShadow = true;
@@ -93,281 +301,58 @@ function init() {
   const hemiLight = new THREE.HemisphereLight(0x8d7c7c, 0x494966, 5);
   scene.add(hemiLight);
 
-  // const spotLight = new THREE.SpotLight();
-  // spotLight.intensity = 8;
-  // spotLight.angle = Math.PI * 2;
-  // // spotLight.penumbra = 0.5;
-  // // spotLight.castShadow = true;
-  // spotLight.position.set(-1, 1, 1);
-  // scene.add(spotLight);
-
   // ---------------------------------------------Three js scene setup END----------------------------------------
-  // ---------------------------------------------3D Object model init----------------------------------------
-
-  const loader = new GLTFLoader();
-  loader.load("Soldier.glb", function (gltf) {
-    model = gltf.scene;
-    model.position.x = 0.03;
-    // scene.add(model);
-
-    containerGroup.add(model);
-
-    model.traverse(function (object) {
-      if (object.isMesh) object.castShadow = true;
-    });
-
-    skeleton = new THREE.SkeletonHelper(model);
-    skeleton.visible = false;
-    // scene.add(skeleton);
-    containerGroup.add(skeleton);
-
-    const animations = gltf.animations;
-
-    mixer = new THREE.AnimationMixer(model);
-
-    walkAction = mixer.clipAction(animations[3]);
-
-    action = walkAction;
-    action.play();
-    action.timeScale = 2.9 / 5;
-    scene.add(containerGroup);
-
-    // const gradientMap = new THREE.DataTexture(
-    //   colors,
-    //   colors.length,
-    //   1,
-    //   THREE.RedFormat
-    // );
-    // gradientMap.needsUpdate = true;
-    // const sphereGeo = new THREE.SphereGeometry(3, 16, 32);
-    // const sphereMaterial = new THREE.MeshToonMaterial({ color: 0xff0000 });
-    // const mesh = new THREE.Mesh(sphereGeo, sphereMaterial);
-    // mesh.material.opacity = 1;
-    // mesh.position.set(0, 0, 0);
-
-    // scene.add(mesh);
-
-    // const particles = initParticles(20);
-    // ---------------------------------------------3D Object model init END----------------------------------------
-    // ---------------------------------------------GSAP scroll animation----------------------------------------
-
-    // Rotating the entire group (model, lights, sparkles)
-    gsap.to(containerGroup.rotation, {
-      y: Math.PI * 2.1,
-      scrollTrigger: {
-        trigger: container,
-        scrub: 1,
-        // pin: true,
-        start: () => "top top",
-        end: () => "+=800%",
-      },
-    });
-
-    // Camera z-axis positioning around the model on scroll
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: container,
-          scrub: 0,
-          pin: true,
-          start: () => "top top",
-          end: () => "+=800%",
-          onUpdate: (e) => {
-            camera.lookAt(
-              0,
-              1.7 - Math.round((e.progress + Number.EPSILON) * 1000) / 1000,
-              0
-            );
-            camera.position.y =
-              1.4 - Math.round((e.progress + Number.EPSILON) * 1000) / 1000;
-            // console.log("camera.position", camera.position);
-          },
-        },
-      })
-      .to(camera.position, {
-        z: -1.2,
-      })
-      .to(camera.position, {
-        z: -0.9,
-      })
-      .to(camera.position, {
-        z: -1.5,
-      })
-      .to(camera.position, {
-        z: -2,
-      })
-      .to(camera.position, {
-        z: -2.5,
-      })
-      .to(camera.position, {
-        z: -3,
-      })
-      .to(containerGroup.position, {
-        y: 1,
-      });
-
-    // Walk1 text animation for the number above the text (opacity 0 -> 1)
-    gsap.to(walkHeaderNumber1, {
-      opacity: 1,
-      scrollTrigger: {
-        trigger: document.documentElement,
-        scrub: 1,
-        // scroller: "#container",
-        // markers: true,
-        // pin: true,
-        start: () => "+30% top",
-        end: () => "+=50%",
-      },
-    });
-
-    // Walk1 text animation for the number above the text (opacity 1 -> 0)
-    gsap.fromTo(
-      walkHeaderNumber1,
-      {
-        // opacity: 1,
-      },
-      {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: document.documentElement,
-          scrub: 1,
-          // scroller: "#container",
-          // markers: true,
-          // pin: true,
-          start: () => "+50% top",
-          end: () => "+=15%",
-        },
+  // ---------------------------------------------3D Object model init--------------------------------------------
+  // let currentModel = 0;
+  // loadModel(modelsConfig[0]);
+  const reverseAnim = getReverseAnim();
+  Array.from(document.querySelectorAll(".character")).map((character, i) => {
+    character.onclick = () => {
+      if (currentModel === i) return;
+      const isOngoing = reverseAnim(camera);
+      if (isOngoing) {
+        return;
       }
-    );
-    // Walk1 text animation (rotation and opacity 0 -> 1)
-    gsap.to(walkHeader1, {
-      rotateX: 0,
-      rotateY: 0,
-      rotateZ: 0,
-      opacity: 1,
-      stagger: 0.05,
+      setTimeout(() => {
+        currentModel = i;
+        containerGroup.children[3].visible = false;
+        containerGroup.children[4].visible = false;
+        containerGroup.children[5].visible = false;
 
-      scrollTrigger: {
-        trigger: document.documentElement,
-        scrub: 1,
-        // scroller: "#container",
-        // markers: true,
-        // pin: true,
-        start: () => "+30% top",
-        end: () => "+=100%",
-      },
-    });
+        containerGroup.children[3 + currentModel].visible = true;
+        scene.background = new THREE.Color(
+          modelsConfig[currentModel].background
+        );
 
-    // Walk1 text animation (opacity 1 -> 0)
-    gsap.fromTo(
-      walkHeader1,
-      {
-        // opacity: 1,
-      },
-      {
-        top: -100,
-        // top: walkHeader.getBoundingClientRect().top - 150,
-        opacity: 0,
-        scrollTrigger: {
-          trigger: document.documentElement,
-          scrub: 1,
-          // scroller: "#container",
-          // markers: true,
-          // pin: true,
-          start: () => "+50% top",
-          end: () => "+=15%",
-        },
-      }
-    );
-
-    // Walk2 text animation for the number above the text (opacity 0 -> 1)
-    gsap.to(walkHeaderNumber2, {
-      opacity: 1,
-      scrollTrigger: {
-        trigger: document.documentElement,
-        scrub: 1,
-        // scroller: "#container",
-        // markers: true,
-        // pin: true,
-        start: () => "+60% top",
-        end: () => "+=50%",
-      },
-    });
-
-    // Walk2 text animation (rotation and opacity 0 -> 1)
-    gsap.to(walkHeader2, {
-      rotateX: 0,
-      rotateY: 0,
-      rotateZ: 0,
-      opacity: 1,
-      stagger: 0.05,
-
-      scrollTrigger: {
-        trigger: document.documentElement,
-        scrub: 1,
-        // markers: true,
-        // pin: true,
-        start: () => "+60% top",
-        end: () => "+=100%",
-      },
-    });
-
-    // Walk2 text animation (opacity 1 -> 0)
-    gsap.fromTo(
-      walkHeader2,
-      {
-        // opacity: 1,
-      },
-      {
-        top: -100,
-        // top: walkHeader.getBoundingClientRect().top - 150,
-        opacity: 0,
-        scrollTrigger: {
-          trigger: document.documentElement,
-          scrub: 1,
-          // scroller: "#container",
-          // markers: true,
-          // pin: true,
-          start: () => "+80% top",
-          end: () => "+=15%",
-        },
-      }
-    );
-
-    // Walk1 text animation for the number above text (opacity 1 -> 0)
-    gsap.fromTo(
-      walkHeaderNumber2,
-      {
-        // opacity: 1,
-      },
-      {
-        opacity: 0,
-        scrollTrigger: {
-          trigger: document.documentElement,
-          scrub: 1,
-          // scroller: "#container",
-          // markers: true,
-          // pin: true,
-          start: () => "+80% top",
-          end: () => "+=15%",
-        },
-      }
-    );
-
-    gsap.to("#hidden-scroll", {
-      scrollTrigger: {
-        trigger: container,
-        scrub: 1,
-        // pin: true,
-        start: () => "top top",
-        end: () => "+=700%",
-      },
-    });
-
-    renderer.setAnimationLoop(animate);
-
-    // ---------------------------------------------GSAP scroll animation END----------------------------------------
+        walkHeader1.textContent = modelsConfig[currentModel].info[0].title;
+        walkDescrition1.textContent =
+          modelsConfig[currentModel].info[0].description;
+        walkHeader2.textContent = modelsConfig[currentModel].info[1].title;
+        walkDescrition2.textContent =
+          modelsConfig[currentModel].info[1].description;
+        function invert(rgb) {
+          rgb = Array.prototype.join.call(arguments).match(/(-?[0-9\.]+)/g);
+          for (var i = 0; i < rgb.length; i++) {
+            rgb[i] = (i === 3 ? 1 : 255) - rgb[i];
+          }
+          return rgb;
+        }
+        const textColor = `rgb(${invert(
+          modelsConfig[currentModel].background
+        ).join(", ")})`;
+        walkHeader1.style.color = textColor;
+        walkDescrition1.style.color = textColor;
+        walkHeader2.style.color = textColor;
+        walkDescrition2.style.color = textColor;
+        walkHeaderNumber1.style.color = textColor;
+        walkHeaderNumber2.style.color = textColor;
+      }, 500);
+    };
   });
+
+  // ---------------------------------------------GSAP scroll animation--------------------------------------------
+  animations(container, containerGroup, camera, modelsConfig[currentModel]);
+  // ---------------------------------------------GSAP scroll animation END----------------------------------------
 
   renderer = new THREE.WebGLRenderer({
     antialias: true,
@@ -421,12 +406,10 @@ function init() {
   container.appendChild(renderer.domElement);
   window.addEventListener("resize", onWindowResize);
   // window.addEventListener("mousemove", onMouseMove);
+  modelsConfig.forEach((modelConfig, i) => loadModel(modelConfig, i));
 }
-function onMouseMove(e) {
-  console.log((e.clientY - window.innerHeight / 2) * 0.00005);
-  camera.position.x = (e.clientX - window.innerWidth / 2) * 0.0001;
-  // camera.position.y = (e.clientY - window.innerHeight / 2) * 0.00005;
-}
+// const controls = new OrbitControls(camera, renderer.domElement);
+// controls.update();
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -442,77 +425,40 @@ window.addEventListener("mouseup", () => {
   document.body.style.cursor = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32'%3E%3Cpath fill='%23fff' d='M24.7 17.8a25.1 25.1 0 0 1-2.49 8.02c-.25.53-.45 1.1-.67 1.64-.66 1.3-.5 3.03-.5 3.15l-.82.04-1.72-4c-.53.87-1.05 1.97-1.54 2.82l-.91-.07s-1.05-2.87-1.61-4.28c-.34 1.08-.65 2.05-.94 3.02-.22.72-.46 1.91-.68 2.64h-.87c0-1.78-.14-1.86-.57-2.32-.96-1.06-1.92-2.13-2.93-3.14-.73-.71-1.37-1.43-1.23-2.53.13-1.04.32-2.07.57-3.1.2-.79.88-1.19 1.62-1.53.54 1.38 1.06 2.77 2.03 4-.22-1.06-.43-2.06-.6-3.05-.7-3.83-.57-7.65.21-11.44.35-1.66.78-3.3 1.2-4.95.3-1.16 1.14-1.68 2.22-1.44.97.22 1.4.97 1.22 1.96-.4 2.1-.81 4.18-1.15 6.28-.3 1.85-.18 3.7.18 5.52.07-.4.1-.8.21-1.17.29-1 .95-1.53 1.83-1.49.86.04 1.39.5 1.53 1.37l.08.63c.51-1.16.9-1.4 2.04-1.24.89.12 1.36.66 1.5 1.68.24-.2.49-.5.8-.6.86-.34 1.66.13 1.92 1.03.26.85.17 1.7.07 2.56Z'/%3E%3Cpath fill='%23000' d='M22.38 12.84c1.42-.62 3.25.2 3.52 2.36a13.4 13.4 0 0 1-.14 3.62c-.37 2.74-1.43 5.24-2.56 7.72-.34.7-.6 1.42-.8 2.17-.11.42-.11.86-.1 1.3l-.01.49v1.28h-2.75c-.09 0-.2-.17-.26-.28l-.58-1.31-.38-.85-1.01 1.32-1.67-.07-1.07-1.57-.85 2.98h-3V30.01c.03-.37-.09-.74-.35-1l-.71-.77a78.89 78.89 0 0 0-2.19-2.28c-.82-.82-1.46-1.72-1.44-2.9 0-.55.1-1.09.19-1.62l.09-.55c.07-.5.16-1 .29-1.5.32-1.2 1.22-1.9 2.26-2.43.32-.16.38-.35.38-.71v-.52c-.02-1.58-.04-3.16.08-4.72.19-2.67.82-5.26 1.53-7.83.2-.7.49-1.37.85-2 .5-.9 2.06-1.53 3.5-.97a2.8 2.8 0 0 1 1.78 3.32c-.4 2.04-.76 4.08-1.13 6.13a8 8 0 0 0-.1 1c0 .13 0 .27-.02.4.1-.09 1.8-.48 2.82.65l.07.02.09-.02c.85-.23 2.59-.69 3.67 1.13Zm-.2 12.84a24.9 24.9 0 0 0 2.46-7.94c.1-.85.2-1.7-.06-2.53-.26-.9-1.06-1.36-1.9-1.04-.22.09-.41.25-.59.42l-.22.19c-.13-1.01-.6-1.55-1.48-1.67-1.12-.16-1.5.08-2.02 1.23l-.02-.16a6.67 6.67 0 0 0-.06-.46c-.14-.86-.66-1.33-1.52-1.36-.87-.05-1.52.47-1.8 1.47-.08.25-.12.51-.16.78l-.06.39a15.2 15.2 0 0 1-.18-5.48c.34-2.08.74-4.15 1.14-6.23.19-.97-.24-1.72-1.2-1.94-1.07-.24-1.9.28-2.2 1.42-.43 1.64-.85 3.27-1.2 4.92-.77 3.76-.9 7.54-.22 11.34l.42 2.13.18.9c-.92-1.18-1.43-2.5-1.95-3.83l-.06-.15c-.73.35-1.4.75-1.6 1.53a28.03 28.03 0 0 0-.57 3.07c-.14 1.09.5 1.8 1.22 2.5.93.94 1.82 1.92 2.7 2.9l.21.22.05.06c.39.41.52.55.52 2.24h.86c.1-.34.2-.79.32-1.24.12-.5.24-1 .35-1.38l.93-2.99c.55 1.4 1.6 4.25 1.6 4.25l.9.06c.22-.37.44-.78.66-1.2.28-.55.57-1.11.87-1.6l.94 2.2.76 1.77.82-.04v-.11c-.02-.42-.08-1.88.49-3.01l.2-.52c.15-.37.3-.75.47-1.1ZM13.22 2.33l2.02.43-.4 1.28-1.69-.35v-.02l-.07-.01s0-.8.14-1.33Zm1.21 15.2c2.92.15 5.77.73 8.63 1.5l.34-1.28a39.58 39.58 0 0 0-8.97-1.55v1.34Zm7.95 3.7s-5.65-1.08-6.23-1.17l.05-.37.12-1.03L22.78 20c-.11.41-.25.83-.4 1.23Z'/%3E%3C/svg%3E%0A") 12 2,auto`;
 });
 
-class Particle {
-  constructor() {
-    this.bloom = new THREE.Group();
-    this.speedx = Math.random() * 5;
-    this.speedy = Math.random() * 5;
-    this.speedz = Math.random() * 5;
-    this.bloom.position.x = (Math.random() - 0.5) * 5;
-    this.bloom.position.y = Math.random() * 5;
-    this.bloom.position.z = (Math.random() - 0.5) * 5;
-
-    // for (var j = 0; j < 0.018; j += 0.003) {
-    for (var j = 0; j < 0.03; j += 0.005) {
-      var sphere = new THREE.Mesh(
-        new THREE.SphereGeometry(j, 32, 16),
-        new THREE.MeshLambertMaterial({
-          color: "orange",
-          transparent: true,
-          opacity: 0.02,
-        })
-      );
-      // sphere.material.opacity = Math.random() - 0.5;
-
-      // gsap.to(sphere.material, {
-      //   opacity: 0.1,
-      //   duration: Math.random() + 1,
-      //   repeat: -1,
-      //   yoyo: true,
-      //   ease: "sine.inOut",
-      // });
-
-      this.bloom.add(sphere);
-    }
-    bloomGroup.add(this.bloom);
-  }
-  update = () => {
-    if (this.bloom.position.x < -3) this.bloom.position.x = 3;
-    else if (this.bloom.position.x > 3) this.bloom.position.x = -3;
-
-    if (this.bloom.position.y < 0.5) this.bloom.position.y = 5;
-    else if (this.bloom.position.y > 5) this.bloom.position.y = 0.5;
-
-    if (this.bloom.position.z < -2) this.bloom.position.z = 5;
-    else if (this.bloom.position.z > 5) this.bloom.position.z = -2;
-    this.bloom.position.x += 0.001 * this.speedx;
-    this.bloom.position.y += 0.001 * this.speedy;
-    this.bloom.position.z += 0.001 * this.speedz;
-  };
-}
 const randomSparkles = () => {
-  for (let i = 0; i < 100; i++) {
-    particles.push(new Particle());
-
+  for (let i = 0; i < 50; i++) {
+    particles.push(new Particle(bloomGroup));
     containerGroup.add(bloomGroup);
   }
-  scene.add(containerGroup);
+  // scene.add(containerGroup);
 };
 
 randomSparkles();
 
+let oldCurrentModel;
 function animate() {
+  if (loading.every((loaded) => loaded !== 1)) {
+    canvasContainer;
+  }
   for (let i = 0; i < particles.length; i++) {
     const element = particles[i];
-    element.update();
+    element.update(
+      oldCurrentModel !== currentModel
+        ? modelsConfig[currentModel].particlesColor
+        : null
+    );
   }
 
   let mixerUpdateDelta = clock.getDelta();
-
-  mixer.update(mixerUpdateDelta);
+  // console.log("mixer", mixer);
+  mixers.forEach((mixer) => {
+    mixer.update(mixerUpdateDelta);
+  });
 
   renderer.render(scene, camera);
   composer.render();
+  // controls.update();
+  oldCurrentModel = currentModel;
 }
 
 // let myAudio = document.querySelector("#audio");
@@ -520,5 +466,3 @@ function animate() {
 //   myAudio.currentTime = 25;
 //   // myAudio.play();
 // });
-
-window.addEventListener("scroll", (e) => {});
