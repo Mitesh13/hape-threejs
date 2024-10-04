@@ -201,6 +201,7 @@ const loadModel = (modelObj, i) => {
     (xhr) => {
       totalAssetsWeight = xhr;
       loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
+      var per = Math.round(Number(loading) * 100) + "%";
 
       if (i == 0) {
         // loadThrottle(loading[i]);
