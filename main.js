@@ -204,40 +204,40 @@ const loadModel = (modelObj, i) => {
 
       if (i == 0) {
         // loadThrottle(loading[i]);
-        // gsap.to(
-        //   loading1,
-        //   // { textContent: Math.round(Number(loading1.textContent)) },
-        //   {
-        //     textContent: per,
-        //     duration: 1,
-        //     ease: "power1.inOut",
-        //   }
-        // );
-        loading1.textContent = Math.round(loading[0] * 100) + "%";
+        gsap.to(
+          loading1,
+          // { textContent: Math.round(Number(loading1.textContent)) },
+          {
+            textContent: per,
+            duration: 1,
+            ease: "power1.inOut",
+          }
+        );
+        // loading1.textContent = Math.round(loading[0] * 100) + "%";
       }
       if (i == 1) {
-        // gsap.to(
-        //   loading2,
-        //   // { textContent: Math.round(Number(loading1.textContent)) },
-        //   {
-        //     textContent: Math.round(Number(loading[1]) * 100) + "%",
-        //     duration: 1,
-        //     ease: "power1.inOut",
-        //   }
-        // );
-        loading2.textContent = Math.round(loading[1] * 100) + "%";
+        gsap.to(
+          loading2,
+          // { textContent: Math.round(Number(loading1.textContent)) },
+          {
+            textContent: Math.round(Number(loading[1]) * 100) + "%",
+            duration: 1,
+            ease: "power1.inOut",
+          }
+        );
+        // loading2.textContent = Math.round(loading[1] * 100) + "%";
       }
       if (i == 2) {
-        // gsap.to(
-        //   loading3,
-        //   // { textContent: Math.round(Number(loading1.textContent)) },
-        //   {
-        //     textContent: Math.round(Number(loading[2]) * 100) + "%",
-        //     duration: 1,
-        //     ease: "power1.inOut",
-        //   }
-        // );
-        loading3.textContent = Math.round(loading[2] * 100) + "%";
+        gsap.to(
+          loading3,
+          // { textContent: Math.round(Number(loading1.textContent)) },
+          {
+            textContent: Math.round(Number(loading[2]) * 100) + "%",
+            duration: 1,
+            ease: "power1.inOut",
+          }
+        );
+        // loading3.textContent = Math.round(loading[2] * 100) + "%";
       }
       if (loading.every((loaded) => loaded == 1) && !tl.parent) {
         console.log(
