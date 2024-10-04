@@ -88,6 +88,7 @@ body {
   justify-content: center;
   align-items: center;
   gap: 20px;
+  will-change: transform, top, bottom;
 }
 #loading div {
   display: flex;
@@ -108,6 +109,9 @@ body {
   height: 100px;
   width: 100px;
   text-align: center;
+}
+#icons-container img {
+  will-change: transform, top;
 }
 .header-wrapper {
   margin: 0 auto;
