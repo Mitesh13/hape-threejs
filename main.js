@@ -437,9 +437,9 @@ randomSparkles();
 
 let oldCurrentModel;
 function animate() {
-  if (loading.every((loaded) => loaded !== 1)) {
-    canvasContainer;
-  }
+  // if (loading.every((loaded) => loaded !== 1)) {
+  //   canvasContainer;
+  // }
   for (let i = 0; i < particles.length; i++) {
     const element = particles[i];
     element.update(
