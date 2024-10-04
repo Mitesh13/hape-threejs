@@ -223,10 +223,10 @@ const loadModel = (modelObj, i) => {
           delay: 1.5,
         });
         console.log(document.querySelectorAll("#icons-container img"));
-        tl.from("#icons-container img", {
-          top: 100,
+        tl.to("#icons-container img", {
+          top: 0,
           duration: 0.5,
-          // ease: "back.out(1.7)",
+          ease: "back.out(1.7)",
           stagger: 0.2,
         });
       }
