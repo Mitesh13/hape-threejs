@@ -226,7 +226,7 @@ const loadModel = (modelObj, i) => {
         tl.from("#icons-container img", {
           top: 100,
           duration: 0.5,
-          ease: "back.out(1.7)",
+          // ease: "back.out(1.7)",
           stagger: 0.2,
         });
       }
