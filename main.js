@@ -240,7 +240,7 @@ const loadModel = (modelObj, i) => {
         // );
         loading3.textContent = Math.round(loading[2] * 100) + "%";
       }
-      if (loading.every((loaded) => loaded == 1)) {
+      if (loading.every((loaded) => loaded == 1) && !tl) {
         console.log("here");
         tl = gsap.timeline();
         const iconsContainer = document.getElementById("icons-container");
