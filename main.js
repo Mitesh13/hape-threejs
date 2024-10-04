@@ -221,6 +221,7 @@ const loadModel = (modelObj, i) => {
           // opacity: 0,
           duration: 1,
           delay: 1.5,
+          ease: "power1.inOut",
         });
         console.log(document.querySelectorAll("#icons-container img"));
         tl.to("#icons-container img", {
