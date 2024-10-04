@@ -174,7 +174,7 @@ const loadModel = (modelObj, i) => {
     (xhr) => {
       totalAssetsWeight = xhr;
       loading[i] = xhr.loaded / xhr.total;
-      // console.log("loading", loading);
+      console.log("loading", xhr);
       if (i == 0) {
         const per = Math.round(Number(loading[0]) * 100) + "%";
         console.log("loading[0]", per);
