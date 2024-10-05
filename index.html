@@ -9,15 +9,25 @@
     <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   </head>
   <body>
-    <div id="loading">
-      <div><span id="loading-1">0%</span>Terraguard</div>
-      <div><span id="loading-2">0%</span>Aurora Strike</div>
-      <div><span id="loading-3">0%</span>Vigilantius</div>
+    <div
+      id="loading"
+      class="fixed inset-0 flex justify-center items-center z-[99999] bg-white"
+    >
+      <div
+        id="loading-circles"
+        class="h-auto flex flex-col md:flex-row justify-center items-center gap-[20px]"
+      >
+        <div class="text-center"><span id="loading-1">0%</span>Terraguard</div>
+        <div class="text-center">
+          <span id="loading-2">0%</span>Aurora Strike
+        </div>
+        <div class="text-center"><span id="loading-3">0%</span>Vigilantius</div>
+      </div>
     </div>
     <div id="container" class="z-[9999]">
       <div
         id="walk-header-wrapper"
-        class="absolute top-1/2 z-[9999] -right-[5%] -translate-x-1/2 -translate-y-1/2 w-1/4 text-white"
+        class="absolute bottom-10 md:bottom-[unset] md:top-1/2 right-5 md:-right-[5%] md:-translate-x-1/2 -translate-y-1/2 w-2/4 md:w-1/4 text-white"
       >
         <span
           id="id-walk-header-number-1"
@@ -26,16 +36,16 @@
         >
         <span
           id="id-walk-header-1"
-          class="text-[40px] font-[900] block uppercase leading-[0.9] tracking-tight walk-header-1 relative mt-8"
+          class="text-xl md:text-[40px] font-[900] block uppercase leading-[0.9] tracking-tight walk-header-1 relative mt-8"
         ></span>
         <span
           id="id-walk-description-1"
-          class="text-sm font-[900] block mt-4 walk-header-1 relative walk-header-desc"
+          class="text-xs md:text-sm font-[900] block mt-4 walk-header-1 relative walk-header-desc"
         ></span>
       </div>
       <div
         id="walk-header-wrapper"
-        class="absolute top-1/2 left-[25%] -translate-x-1/2 -translate-y-1/2 w-1/4 text-white"
+        class="absolute bottom-10 md:bottom-[unset] md:top-1/2 left-5 md:left-[25%] md:-translate-x-1/2 -translate-y-1/2 w-2/4 md:w-1/4 text-white"
       >
         <span
           id="id-walk-header-number-2"
@@ -44,11 +54,11 @@
         >
         <span
           id="id-walk-header-2"
-          class="text-[40px] font-[900] block uppercase leading-[0.9] tracking-tight walk-header-2 relative mt-8"
+          class="text-xl md:text-[40px] font-[900] block uppercase leading-[0.9] tracking-tight walk-header-2 relative mt-8"
         ></span>
         <span
           id="id-walk-description-2"
-          class="text-sm font-[900] block mt-4 walk-header-2 relative walk-header-desc"
+          class="text-xs md:text-sm font-[900] block mt-4 walk-header-2 relative walk-header-desc"
         >
         </span>
       </div>

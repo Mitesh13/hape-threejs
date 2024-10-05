@@ -127,6 +127,10 @@ const loadingContainer = document.getElementById("loading");
 const loaderMesh = showLoader(containerGroup);
 loaderMesh.userData.label = "loader";
 
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+};
+
 const afterLoad = (model, modelObj) => {
   // model.visible = false;
   // containerGroup.add(skeleton);
@@ -137,9 +141,10 @@ const afterLoad = (model, modelObj) => {
       mixers.push(new THREE.AnimationMixer(model));
       playModels(model, i);
     });
-    containerGroup.children[3].visible = true;
+    containerGroup.children[2].visible = true;
+    containerGroup.children[3].visible = false;
     containerGroup.children[4].visible = false;
-    containerGroup.children[5].visible = false;
+    // containerGroup.children[5].visible = false;
 
     walkHeader1.textContent = modelsConfig[currentModel].info[0].title;
     walkDescrition1.textContent =
@@ -170,7 +175,6 @@ const throttle = () => {
     if (flag) return;
     // flag = true;
     // setTimeout(() => {
-    console.log("loading", loading);
     var per = Math.round(Number(loading) * 100) + "%";
 
     flag = false;
@@ -179,7 +183,6 @@ const throttle = () => {
       // { textContent: Math.round(Number(loading1.textContent)) },
       {
         textContent: () => {
-          console.log("these many times");
           return per;
         },
         duration: 1,
@@ -241,11 +244,6 @@ const loadModel = (modelObj, i) => {
         // loading3.textContent = Math.round(loading[2] * 100) + "%";
       }
       if (loading.every((loaded) => loaded == 1) && !tl.parent) {
-        console.log(
-          "here reveal",
-          loading.every((loaded) => loaded == 1),
-          tl
-        );
         const iconsContainer = document.getElementById("icons-container");
         iconsContainer.style.display = "flex";
         tl.to(loadingContainer, {
@@ -263,13 +261,6 @@ const loadModel = (modelObj, i) => {
           stagger: 0.2,
         });
       }
-      // console.log("xhr", xhr);
-      // containerGroup.updateMatrix();
-      // console.log(
-      //   "((xhr.loaded / xhr.total) * 3.6 * Math.PI) / 180",
-      //   xhr.loaded / xhr.total,
-      //   xhr.loaded / xhr.total == 1 ? 0.99999 : xhr.loaded / xhr.total
-      // );
     }
   );
 };
@@ -286,8 +277,8 @@ function init() {
     0.1,
     1000
   );
-
-  camera.position.set(0.1, 1.4, -0.5);
+  const zOffset = window.innerWidth < 768 ? -0.5 : 0;
+  camera.position.set(0.1, 1.4, zOffset + -0.5);
   camera.lookAt(0, 1.7, 0);
 
   clock = new THREE.Clock();
@@ -297,24 +288,25 @@ function init() {
 
   scene.background = new THREE.Color("rgb(32, 31, 31)");
 
-  let geometry = new THREE.PlaneGeometry(3, 3);
-  groundReflector = new ReflectorForSSRPass(geometry, {
-    clipBias: 0.0003,
-    textureWidth: window.innerWidth,
-    textureHeight: window.innerHeight,
-    color: 0x888888,
-    useDepthTexture: true,
-  });
-  groundReflector.material.depthWrite = false;
-  groundReflector.rotation.x = -Math.PI / 2;
-  // groundReflector.visible = false;
-  groundReflector.position.z = -1;
+  // ----------------------------------- REMOVED REFLECTION --------------------------------
+  // let geometry = new THREE.PlaneGeometry(3, 3);
+  // groundReflector = new ReflectorForSSRPass(geometry, {
+  //   clipBias: 0.0003,
+  //   textureWidth: window.innerWidth,
+  //   textureHeight: window.innerHeight,
+  //   color: 0x888888,
+  //   useDepthTexture: true,
+  // });
+  // groundReflector.material.depthWrite = false;
+  // groundReflector.rotation.x = -Math.PI / 2;
+  // groundReflector.position.z = -1;
 
-  scene.add(groundReflector);
-  containerGroup.add(groundReflector);
+  // scene.add(groundReflector);
+  // containerGroup.add(groundReflector);
+  // ----------------------------------- REMOVED REFLECTION --------------------------------
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 10);
-  dirLight.position.set(-3, 10, -10);
+  dirLight.position.set(-1, 1, -1);
   dirLight.castShadow = true;
   dirLight.shadow.camera.top = 2;
   dirLight.shadow.camera.bottom = -2;
@@ -342,11 +334,11 @@ function init() {
       }
       setTimeout(() => {
         currentModel = i;
+        containerGroup.children[2].visible = false;
         containerGroup.children[3].visible = false;
         containerGroup.children[4].visible = false;
-        containerGroup.children[5].visible = false;
 
-        containerGroup.children[3 + currentModel].visible = true;
+        containerGroup.children[2 + currentModel].visible = true;
         scene.background = new THREE.Color(
           modelsConfig[currentModel].background
         );
@@ -415,8 +407,8 @@ function init() {
     camera,
     width: innerWidth,
     height: innerHeight,
-    groundReflector: params.groundReflector ? groundReflector : null,
-    selects: params.groundReflector ? selects : null,
+    // groundReflector: params.groundReflector ? groundReflector : null,
+    // selects: params.groundReflector ? selects : null,
   });
 
   composer.addPass(ssrPass);
@@ -426,14 +418,41 @@ function init() {
   ssrPass.infiniteThick = false;
 
   ssrPass.maxDistance = 0.5;
-  groundReflector.maxDistance = ssrPass.maxDistance;
+  // groundReflector.maxDistance = ssrPass.maxDistance;
   ssrPass.opacity = 1;
-  groundReflector.opacity = ssrPass.opacity;
+  // groundReflector.opacity = ssrPass.opacity;
 
   container.appendChild(renderer.domElement);
   window.addEventListener("resize", onWindowResize);
   // window.addEventListener("mousemove", onMouseMove);
   modelsConfig.forEach((modelConfig, i) => loadModel(modelConfig, i));
+  // ------------------------------------------   Ground   ---------------------------------
+  const geometry = new THREE.PlaneGeometry(10, 10);
+  const material = new THREE.ShadowMaterial({
+    color: new THREE.Color("black"),
+    // wireframe: true,
+  });
+  material.opacity = 0.6;
+  const ground = new THREE.Mesh(geometry, material);
+  ground.position.set(0, 0, 0);
+  ground.material.side = THREE.DoubleSide;
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // ------------------------------------------   Around globe   ---------------------------------
+  // const sphereGeometry = new THREE.SphereGeometry(3, 16, 32);
+  // const sphereMaterial = new THREE.MeshBasicMaterial({
+  //   color: new THREE.Color("rgb(34, 28, 28)"),
+  //   // wireframe: true,
+  // });
+  // const globe = new THREE.Mesh(sphereGeometry, sphereMaterial);
+  // globe.position.set(0, 1, 0);
+  // globe.material.side = THREE.DoubleSide;
+
+  // globe.scale.set(2, 0.5, 4);
+  // globe.receiveShadow = true;
+  // scene.add(globe);
 }
 // const controls = new OrbitControls(camera, renderer.domElement);
 // controls.update();
@@ -477,7 +496,7 @@ function animate() {
   }
 
   let mixerUpdateDelta = clock.getDelta();
-  // console.log("mixer", mixer);
+
   mixers.forEach((mixer) => {
     mixer.update(mixerUpdateDelta);
   });

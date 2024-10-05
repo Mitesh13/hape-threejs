@@ -35,7 +35,6 @@ class Particle {
     bloomGroup.add(this.bloom);
   }
   update = (color) => {
-    // console.log("color", color);
     if (this.bloom.position.x < -3) this.bloom.position.x = 3;
     else if (this.bloom.position.x > 3) this.bloom.position.x = -3;
 

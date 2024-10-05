@@ -83,17 +83,22 @@ body {
 }
 
 #loading {
-  position: fixed;
+  /* position: fixed;
   inset: 0;
-  z-index: 99999;
-  background-color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  z-index: 99999;
+  background-color: white; */
   will-change: transform, top, bottom;
 }
-#loading div {
+#loading-circles {
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px; */
+}
+#loading-circles div {
   display: flex;
   flex-direction: column;
   align-items: center;

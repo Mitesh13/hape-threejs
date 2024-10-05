@@ -22,6 +22,7 @@ const animations = (container, containerGroup, camera, model) => {
   });
 
   // Camera z-axis positioning around the model on scroll
+  const zOffset = window.innerWidth < 768 ? -2.5 : 0;
   tl = gsap
     .timeline({
       scrollTrigger: {
@@ -44,22 +45,22 @@ const animations = (container, containerGroup, camera, model) => {
       },
     })
     .to(camera.position, {
-      z: -1.2,
+      z: zOffset + -1.2,
     })
     .to(camera.position, {
-      z: -0.9,
+      z: zOffset + -0.9,
     })
     .to(camera.position, {
-      z: -1.5,
+      z: zOffset + -1.5,
     })
     .to(camera.position, {
-      z: -2,
+      z: zOffset + -2,
     })
     .to(camera.position, {
-      z: -2.5,
+      z: zOffset + -2.5,
     })
     .to(camera.position, {
-      z: -3.5,
+      z: zOffset + -3.5,
     });
   // .to(containerGroup.position, {
   //   y: 1,
@@ -236,6 +237,7 @@ export const getReverseAnim = () => {
     ongoing = gsap.to(camera.rotation, {
       y: camera.rotation.y + 360 * (Math.PI / 180),
       duration: 1,
+      ease: "power1.inOut",
     });
     ongoing.then((e) => {
       return ongoing;
