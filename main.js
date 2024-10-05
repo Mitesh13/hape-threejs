@@ -5,12 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { SSRPass } from "three/examples/jsm/postprocessing/SSRPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-import { ReflectorForSSRPass } from "three/examples/jsm/objects/ReflectorForSSRPass.js";
-import {
-  FXAAShader,
-  OrbitControls,
-  RenderPass,
-} from "three/examples/jsm/Addons.js";
+import { RenderPass } from "three/examples/jsm/Addons.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import LocomotiveScroll from "locomotive-scroll";
 import Particle from "./particle";
@@ -33,15 +28,8 @@ let loading = [0, 0, 0];
 const bloomGroup = new THREE.Group();
 const particles = [];
 
-const params = {
-  enableSSR: true,
-  autoRotate: true,
-  otherMeshes: true,
-  groundReflector: true,
-};
 let composer;
 let ssrPass;
-let groundReflector;
 const selects = [];
 
 const modelsConfig = [
@@ -289,20 +277,7 @@ function init() {
   scene.background = new THREE.Color("rgb(32, 31, 31)");
 
   // ----------------------------------- REMOVED REFLECTION --------------------------------
-  // let geometry = new THREE.PlaneGeometry(3, 3);
-  // groundReflector = new ReflectorForSSRPass(geometry, {
-  //   clipBias: 0.0003,
-  //   textureWidth: window.innerWidth,
-  //   textureHeight: window.innerHeight,
-  //   color: 0x888888,
-  //   useDepthTexture: true,
-  // });
-  // groundReflector.material.depthWrite = false;
-  // groundReflector.rotation.x = -Math.PI / 2;
-  // groundReflector.position.z = -1;
 
-  // scene.add(groundReflector);
-  // containerGroup.add(groundReflector);
   // ----------------------------------- REMOVED REFLECTION --------------------------------
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 10);
@@ -407,8 +382,6 @@ function init() {
     camera,
     width: innerWidth,
     height: innerHeight,
-    // groundReflector: params.groundReflector ? groundReflector : null,
-    // selects: params.groundReflector ? selects : null,
   });
 
   composer.addPass(ssrPass);
@@ -418,9 +391,7 @@ function init() {
   ssrPass.infiniteThick = false;
 
   ssrPass.maxDistance = 0.5;
-  // groundReflector.maxDistance = ssrPass.maxDistance;
   ssrPass.opacity = 1;
-  // groundReflector.opacity = ssrPass.opacity;
 
   container.appendChild(renderer.domElement);
   window.addEventListener("resize", onWindowResize);
