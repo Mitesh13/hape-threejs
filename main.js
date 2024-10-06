@@ -27,7 +27,7 @@ const selects = [];
 const modelsConfig = [
   {
     index: 1,
-    name: "Soldier (768)",
+    name: "Soldier",
     animationArrayIndex: 3,
     lookAt: [0, 1.7, 0],
     background: "rgb(32, 31, 31)",
@@ -47,7 +47,7 @@ const modelsConfig = [
   },
   {
     index: 2,
-    name: "light_assault_mech (256) (1)",
+    name: "light_assault_mech",
     scale: 0.8,
     rotate: Math.PI,
     animationArrayIndex: 0,
@@ -69,7 +69,7 @@ const modelsConfig = [
   },
   {
     index: 3,
-    name: "free_droide_de_seguridad_k-2so_by_oscar_creativo (256)",
+    name: "free_droide_de_seguridad_k-2so_by_oscar_creativo",
     scale: 0.55,
     rotate: Math.PI,
     animationArrayIndex: 0,
