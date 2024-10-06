@@ -22,7 +22,7 @@ const onModelLoad = (gltf, modelObj, afterLoad) => {
 
     model.userData = { modelObj, gltf };
     // ---------------------------------------------3D Object model init END----------------------------------------
-
+    console.log("model", model);
     afterLoad(model, modelObj);
   } catch (e) {
     console.log("e", e);

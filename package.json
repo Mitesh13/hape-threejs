@@ -9,7 +9,7 @@
     "deploy": "gh-pages -d dist",
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --host"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

@@ -1,17 +1,10 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
-import { SSRPass } from "three/examples/jsm/postprocessing/SSRPass.js";
-import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { RenderPass } from "three/examples/jsm/Addons.js";
-import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
-import LocomotiveScroll from "locomotive-scroll";
 import Particle from "./particle";
 import animations, { getReverseAnim } from "./animations";
 import showLoader from "./loading";
-import onModelLoad from "./utils";
 
 gsap.registerPlugin(ScrollTrigger);
 let scene, renderer, camera, stats;
@@ -24,7 +17,6 @@ let currentModel = 0;
 var containerGroup = new THREE.Group();
 var modelsGroup = new THREE.Group();
 var mainGroup = new THREE.Group();
-let loading = [0, 0, 0];
 const bloomGroup = new THREE.Group();
 const particles = [];
 
@@ -107,10 +99,6 @@ const walkHeader1 = document.getElementById("id-walk-header-1");
 const walkHeader2 = document.getElementById("id-walk-header-2");
 const walkDescrition1 = document.getElementById("id-walk-description-1");
 const walkDescrition2 = document.getElementById("id-walk-description-2");
-const loading1 = document.getElementById("loading-1");
-const loading2 = document.getElementById("loading-2");
-const loading3 = document.getElementById("loading-3");
-const loadingContainer = document.getElementById("loading");
 
 const loaderMesh = showLoader(containerGroup);
 loaderMesh.userData.label = "loader";
@@ -119,16 +107,24 @@ window.onbeforeunload = function () {
   window.scrollTo(0, 0);
 };
 
-const afterLoad = (model, modelObj) => {
+export const afterLoad = (model, modelObj) => {
   // model.visible = false;
   // containerGroup.add(skeleton);
-
+  console.log(
+    "afterLoad",
+    model,
+    models,
+    models.every((model) => model !== null)
+  );
   models[model.userData.modelObj.index - 1] = model;
   if (models.every((model) => model !== null)) {
+    console.log("afterLoad1", model);
+
     models.forEach((model, i) => {
       mixers.push(new THREE.AnimationMixer(model));
       playModels(model, i);
     });
+    console.log("first", containerGroup.children);
     containerGroup.children[2].visible = true;
     containerGroup.children[3].visible = false;
     containerGroup.children[4].visible = false;
@@ -157,105 +153,35 @@ const playModels = (model, i) => {
   containerGroup.add(model);
 };
 
-const throttle = () => {
-  let flag = false;
-  return (loading) => {
-    if (flag) return;
-    // flag = true;
-    // setTimeout(() => {
-    var per = Math.round(Number(loading) * 100) + "%";
+// const throttle = () => {
+//   let flag = false;
+//   return (loading) => {
+//     if (flag) return;
+//     // flag = true;
+//     // setTimeout(() => {
+//     var per = Math.round(Number(loading) * 100) + "%";
 
-    flag = false;
-    gsap.to(
-      loading1,
-      // { textContent: Math.round(Number(loading1.textContent)) },
-      {
-        textContent: () => {
-          return per;
-        },
-        duration: 1,
-        ease: "power1.inOut",
-      }
-    );
-    // }, 100);
-  };
-};
-const loadThrottle = throttle();
-let tl;
-tl = gsap.timeline();
+//     flag = false;
+//     gsap.to(
+//       loading1,
+//       // { textContent: Math.round(Number(loading1.textContent)) },
+//       {
+//         textContent: () => {
+//           return per;
+//         },
+//         duration: 1,
+//         ease: "power1.inOut",
+//       }
+//     );
+//     // }, 100);
+//   };
+// };
+// const loadThrottle = throttle();
 
-const loadModel = (modelObj, i) => {
-  const loader = new GLTFLoader();
-  loader.load(
-    modelObj.name + ".glb",
-    (gltf) => onModelLoad(gltf, modelObj, afterLoad),
-    (xhr) => {
-      totalAssetsWeight = xhr;
-      loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
-      let per = Math.round(Number(loading[0]) * 100) + "%";
-
-      if (i == 0) {
-        // loadThrottle(loading[i]);
-        gsap.to(
-          loading1,
-          // { textContent: Math.round(Number(loading1.textContent)) },
-          {
-            textContent: per,
-            duration: 0.5,
-            ease: "power1.inOut",
-          }
-        );
-        // loading1.textContent = Math.round(loading[0] * 100) + "%";
-      }
-      if (i == 1) {
-        gsap.to(
-          loading2,
-          // { textContent: Math.round(Number(loading1.textContent)) },
-          {
-            textContent: Math.round(Number(loading[1]) * 100) + "%",
-            duration: 0.5,
-            ease: "power1.inOut",
-          }
-        );
-        // loading2.textContent = Math.round(loading[1] * 100) + "%";
-      }
-      if (i == 2) {
-        gsap.to(
-          loading3,
-          // { textContent: Math.round(Number(loading1.textContent)) },
-          {
-            textContent: Math.round(Number(loading[2]) * 100) + "%",
-            duration: 0.5,
-            ease: "power1.inOut",
-          }
-        );
-        // loading3.textContent = Math.round(loading[2] * 100) + "%";
-      }
-      if (loading.every((loaded) => loaded == 1) && !tl.parent) {
-        const iconsContainer = document.getElementById("icons-container");
-        iconsContainer.style.display = "flex";
-        tl.to(loadingContainer, {
-          y: "-100%",
-          // opacity: 0,
-          duration: 1,
-          delay: 1.5,
-          ease: "power1.inOut",
-        });
-        tl.to("#icons-container img", {
-          top: 0,
-          duration: 1,
-          // ease: "back.out(1.7)",
-          ease: "elastic.out(0.4,0.3)",
-          stagger: 0.2,
-        });
-      }
-    }
-  );
-};
 init();
 // loadModel(modelsConfig[0]);
 
-function init() {
+async function init() {
   const container = document.getElementById("container");
 
   // ---------------------------------------------Three js scene setup----------------------------------------
@@ -369,34 +295,38 @@ function init() {
     window.innerHeight,
     parameters
   );
-  composer = new EffectComposer(renderer, renderTarget);
+  // composer = new EffectComposer(renderer, renderTarget);
   var renderPass = new RenderPass(scene, camera);
   renderPass.clearColor = new THREE.Color(0, 0, 0);
   renderPass.clearAlpha = 0;
 
   // composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(renderPass);
-  ssrPass = new SSRPass({
-    renderer,
-    scene,
-    camera,
-    width: innerWidth,
-    height: innerHeight,
-  });
+  // composer.addPass(renderPass);
+  // ssrPass = new SSRPass({
+  //   renderer,
+  //   scene,
+  //   camera,
+  //   width: innerWidth,
+  //   height: innerHeight,
+  // });
 
-  composer.addPass(ssrPass);
-  composer.addPass(new OutputPass());
+  // composer.addPass(ssrPass);
+  // composer.addPass(new OutputPass());
 
-  ssrPass.thickness = 0.018;
-  ssrPass.infiniteThick = false;
+  // ssrPass.thickness = 0.018;
+  // ssrPass.infiniteThick = false;
 
-  ssrPass.maxDistance = 0.5;
-  ssrPass.opacity = 1;
+  // ssrPass.maxDistance = 0.5;
+  // ssrPass.opacity = 1;
 
   container.appendChild(renderer.domElement);
   window.addEventListener("resize", onWindowResize);
-  // window.addEventListener("mousemove", onMouseMove);
-  modelsConfig.forEach((modelConfig, i) => loadModel(modelConfig, i));
+  const loadModel = (await import("./loadModel.js")).default;
+  console.log("loadModel", loadModel);
+  let loading = [0, 0, 0];
+
+  modelsConfig.forEach((modelConfig, i) => loadModel(modelConfig, i, loading));
+  // loadModel(modelsConfig[0], 0);
   // ------------------------------------------   Ground   ---------------------------------
   const geometry = new THREE.PlaneGeometry(10, 10);
   const material = new THREE.ShadowMaterial({
@@ -473,7 +403,7 @@ function animate() {
   });
 
   renderer.render(scene, camera);
-  composer.render();
+  // composer.render();
   // controls.update();
   oldCurrentModel = currentModel;
 }
