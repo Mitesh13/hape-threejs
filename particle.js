@@ -48,7 +48,6 @@ class Particle {
     this.bloom.position.z += 0.001 * this.speedz;
     if (color) {
       this.bloom.children.forEach((sphere) => {
-        console.log("color", color);
         if (color === "orange") sphere.material.opacity = 0.5;
         else sphere.material.opacity = 0.8;
         sphere.material.color = new THREE.Color(color);

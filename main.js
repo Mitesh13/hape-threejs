@@ -12,6 +12,8 @@ let mixer, clock;
 let action, walkAction;
 let totalAssetsWeight = 0;
 let assetsWeightLoaded = 0;
+let loading = [0, 0, 0];
+
 let currentModel = 0;
 
 var containerGroup = new THREE.Group();
@@ -110,21 +112,13 @@ window.onbeforeunload = function () {
 export const afterLoad = (model, modelObj) => {
   // model.visible = false;
   // containerGroup.add(skeleton);
-  console.log(
-    "afterLoad",
-    model,
-    models,
-    models.every((model) => model !== null)
-  );
+
   models[model.userData.modelObj.index - 1] = model;
   if (models.every((model) => model !== null)) {
-    console.log("afterLoad1", model);
-
     models.forEach((model, i) => {
       mixers.push(new THREE.AnimationMixer(model));
       playModels(model, i);
     });
-    console.log("first", containerGroup.children);
     containerGroup.children[2].visible = true;
     containerGroup.children[3].visible = false;
     containerGroup.children[4].visible = false;
@@ -271,7 +265,13 @@ async function init() {
   });
 
   // ---------------------------------------------GSAP scroll animation--------------------------------------------
-  animations(container, containerGroup, camera, modelsConfig[currentModel]);
+  animations(
+    container,
+    containerGroup,
+    camera,
+    modelsConfig[currentModel],
+    loading
+  );
   // ---------------------------------------------GSAP scroll animation END----------------------------------------
 
   renderer = new THREE.WebGLRenderer({
@@ -322,8 +322,6 @@ async function init() {
   container.appendChild(renderer.domElement);
   window.addEventListener("resize", onWindowResize);
   const loadModel = (await import("./loadModel.js")).default;
-  console.log("loadModel", loadModel);
-  let loading = [0, 0, 0];
 
   modelsConfig.forEach((modelConfig, i) => loadModel(modelConfig, i, loading));
   // loadModel(modelsConfig[0], 0);
@@ -383,6 +381,8 @@ const randomSparkles = () => {
 randomSparkles();
 
 let oldCurrentModel;
+let tl2;
+tl2 = gsap.timeline();
 function animate() {
   // if (loading.every((loaded) => loaded !== 1)) {
   //   canvasContainer;
@@ -394,6 +394,29 @@ function animate() {
         ? modelsConfig[currentModel].particlesColor
         : null
     );
+  }
+
+  if (loading.every((loaded) => loaded == 1) && !tl2.parent) {
+    // setTimeout(() => {
+    const iconsContainer = document.getElementById("icons-container");
+    const loadingContainer = document.getElementById("loading");
+
+    iconsContainer.style.display = "flex";
+    tl2.to(loadingContainer, {
+      y: "-100%",
+      // opacity: 0,
+      duration: 1,
+      delay: 1.5,
+      ease: "power1.inOut",
+    });
+    tl2.to("#icons-container img", {
+      top: 0,
+      duration: 1,
+      // ease: "back.out(1.7)",
+      ease: "elastic.out(0.4,0.3)",
+      stagger: 0.2,
+    });
+    // }, 0);
   }
 
   let mixerUpdateDelta = clock.getDelta();

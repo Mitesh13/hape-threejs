@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 let tl;
-const animations = (container, containerGroup, camera, model) => {
+
+const animations = (container, containerGroup, camera, model, loading) => {
   const walkHeader1 = document.getElementsByClassName("walk-header-1");
   const walkHeader2 = document.getElementsByClassName("walk-header-2");
   const walkHeaderNumber1 = document.getElementsByClassName(
