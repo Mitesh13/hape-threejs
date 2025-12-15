@@ -113,6 +113,25 @@ export const afterLoad = (model, modelObj) => {
   // model.visible = false;
   // containerGroup.add(skeleton);
 
+  const iconsContainer = document.getElementById("icons-container");
+  const loadingContainer = document.getElementById("loading");
+
+  iconsContainer.style.display = "flex";
+  tl2.to(loadingContainer, {
+    y: "-100%",
+    // opacity: 0,
+    duration: 1,
+    delay: 1.5,
+    ease: "power1.inOut",
+  });
+  tl2.to("#icons-container img", {
+    top: 0,
+    duration: 1,
+    // ease: "back.out(1.7)",
+    ease: "elastic.out(0.4,0.3)",
+    stagger: 0.2,
+  });
+
   models[model.userData.modelObj.index - 1] = model;
   if (models.every((model) => model !== null)) {
     models.forEach((model, i) => {
@@ -396,28 +415,28 @@ function animate() {
     );
   }
 
-  if (loading.every((loaded) => loaded == 1) && !tl2.parent) {
-    // setTimeout(() => {
-    const iconsContainer = document.getElementById("icons-container");
-    const loadingContainer = document.getElementById("loading");
+  // if (loading.every((loaded) => loaded == 1) && !tl2.parent) {
+  //   // setTimeout(() => {
+  //   const iconsContainer = document.getElementById("icons-container");
+  //   const loadingContainer = document.getElementById("loading");
 
-    iconsContainer.style.display = "flex";
-    tl2.to(loadingContainer, {
-      y: "-100%",
-      // opacity: 0,
-      duration: 1,
-      delay: 1.5,
-      ease: "power1.inOut",
-    });
-    tl2.to("#icons-container img", {
-      top: 0,
-      duration: 1,
-      // ease: "back.out(1.7)",
-      ease: "elastic.out(0.4,0.3)",
-      stagger: 0.2,
-    });
-    // }, 0);
-  }
+  //   iconsContainer.style.display = "flex";
+  //   tl2.to(loadingContainer, {
+  //     y: "-100%",
+  //     // opacity: 0,
+  //     duration: 1,
+  //     delay: 1.5,
+  //     ease: "power1.inOut",
+  //   });
+  //   tl2.to("#icons-container img", {
+  //     top: 0,
+  //     duration: 1,
+  //     // ease: "back.out(1.7)",
+  //     ease: "elastic.out(0.4,0.3)",
+  //     stagger: 0.2,
+  //   });
+  //   // }, 0);
+  // }
 
   let mixerUpdateDelta = clock.getDelta();
 

@@ -2,20 +2,21 @@ import { GLTFLoader } from "three/examples/jsm/Addons.js";
 import onModelLoad from "./utils";
 import { afterLoad } from "./main";
 import gsap from "gsap";
+import * as THREE from "three"
 
 const loadModel = (modelObj, i, loading) => {
   const loading1 = document.getElementById("loading-1");
   const loading2 = document.getElementById("loading-2");
   const loading3 = document.getElementById("loading-3");
-  const loader = new GLTFLoader();
-
+  const manager = new THREE.LoadingManager();
+  const loader = new GLTFLoader(manager);
   loader.load(
     modelObj.name + ".glb",
     (gltf) => onModelLoad(gltf, modelObj, afterLoad),
     (xhr) => {
       // totalAssetsWeight = xhr;
-      loading[i] = xhr.total > 0 ? xhr.loaded / xhr.total : 1;
-      let per = Math.round(Number(loading[0]) * 100) + "%";
+      loading[i] = xhr.total > 0 ? Math.min(xhr.loaded / xhr.total, 1) : 1;
+      let per = Math.round(loading[i] * 100) + "%";
 
       if (i == 0) {
         // loadThrottle(loading[i]);
